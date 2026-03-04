@@ -4,13 +4,15 @@ Stripe connector for **m8flow**: create payment intents, charges, subscriptions,
 
 ## Supported actions
 
-| Action                | Command                | Description                                      |
-|-----------------------|------------------------|--------------------------------------------------|
-| Create payment intent | `CreatePaymentIntent`  | Create a payment intent for card payments        |
-| Create charge         | `CreateCharge`         | Create a charge (legacy Charges API)             |
-| Create subscription   | `CreateSubscription`   | Set up recurring billing for a customer          |
-| Cancel subscription   | `CancelSubscription`   | Cancel immediately or at period end              |
-| Issue refund          | `IssueRefund`          | Full or partial refund for a charge/payment      |
+
+| Action                | Command               | Description                                 |
+| --------------------- | --------------------- | ------------------------------------------- |
+| Create payment intent | `CreatePaymentIntent` | Create a payment intent for card payments   |
+| Create charge         | `CreateCharge`        | Create a charge (legacy Charges API)        |
+| Create subscription   | `CreateSubscription`  | Set up recurring billing for a customer     |
+| Cancel subscription   | `CancelSubscription`  | Cancel immediately or at period end         |
+| Issue refund          | `IssueRefund`         | Full or partial refund for a charge/payment |
+
 
 ## Commands
 
@@ -29,6 +31,7 @@ The m8flow connector proxy introspects each command's `__init__` parameters, so 
 ## Idempotency
 
 All write operations support idempotency keys to prevent duplicate operations during retries:
+
 - Pass `idempotency_key` parameter to any command
 - If not provided, a UUID is automatically generated
 - Stripe caches responses for 24 hours per idempotency key
@@ -46,19 +49,13 @@ All write operations support idempotency keys to prevent duplicate operations du
 ## Adding this connector to m8flow-connector-proxy
 
 1. In the m8flow-connector-proxy project, add this package as a dependency in `pyproject.toml`:
-
-   ```toml
+  ```toml
    connector-stripe = { git = "https://github.com/AOT-Technologies/m8flow-connectors.git", subdirectory = "connectors/connector-stripe", branch = "main" }
-   ```
-
+  ```
 2. Register the Stripe connector and its commands in the proxy's connector configuration. The proxy discovers commands from `connector_stripe.commands`: `CreatePaymentIntent`, `CreateCharge`, `CreateSubscription`, `CancelSubscription`, `IssueRefund`.
-
 3. Configure the Stripe API key in m8flow and map it to the `api_key` parameter for each command in your workflows.
 
-## Documentation
 
-- **[STRIPE_CONNECTOR_SETUP.md](docs/STRIPE_CONNECTOR_SETUP.md)** – Setup, command reference, error codes, and workflow integration.
-- **[STRIPE_TESTING_GUIDE.md](docs/STRIPE_TESTING_GUIDE.md)** – Beginner guide: create a Stripe account, get test API keys, run unit tests, and test Create Payment Intent manually.
 
 ## Testing
 
