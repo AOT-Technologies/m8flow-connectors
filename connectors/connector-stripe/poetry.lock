@@ -488,26 +488,6 @@ files = [
 ]
 
 [[package]]
-name = "spiffworkflow-connector-command"
-version = "0.2.0"
-description = "Make HTTP Requests available to SpiffWorkflow Service Tasks"
-optional = false
-python-versions = "^3.9"
-groups = ["main"]
-files = []
-develop = false
-
-[package.dependencies]
-requests = "^2.28.2"
-typing-extensions = "^4.8.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/sartography/spiffworkflow-connector-command.git"
-reference = "main"
-resolved_reference = "7e20603849ee609267ddc97c8433077e09ccd124"
-
-[[package]]
 name = "tomli"
 version = "2.4.0"
 description = "A lil' TOML parser"
@@ -571,7 +551,7 @@ version = "4.15.0"
 description = "Backported and Experimental Type Hints for Python 3.9+"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "dev"]
+groups = ["dev"]
 files = [
     {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
     {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
@@ -598,4 +578,4 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "e8f0d55fa42ecfdcc054a880944c880208ef32d2a0d4afa9a328b5da7f6dd4a9"
+content-hash = "3c262a0263ebc39bc9610e939b5b0ac0af807f1a144d2c38d4835f261498d3c8"
