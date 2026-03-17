@@ -1,4 +1,4 @@
-# connector-salesforce
+# M8flow Connector Salesforce
 
 Salesforce connector for **m8flow**: CRUD for Lead and Contact with OAuth 2.0. Supports create, read, update, and delete with field-mapping validation and clear error reporting.
 
@@ -41,7 +41,7 @@ The m8flow connector proxy introspects each command’s `__init__` parameters, s
 1. In the m8flow-connector-proxy project, add this package as a dependency in `pyproject.toml`:
 
    ```toml
-   connector-salesforce = { git = "https://github.com/AOT-Technologies/m8flow-connectors.git", subdirectory = "connectors/connector-salesforce", branch = "main" }
+   m8flow-connector-salesforce = { git = "https://github.com/AOT-Technologies/m8flow-connectors.git", subdirectory = "connectors/m8flow-connector-salesforce", branch = "main" }
    ```
 
 2. Register the Salesforce connector and its commands in the proxy’s connector configuration. The proxy discovers commands from `connector_salesforce.commands`: `CreateLead`, `CreateContact`, `ReadLead`, `ReadContact`, `UpdateLead`, `UpdateContact`, `DeleteLead`, `DeleteContact`.
