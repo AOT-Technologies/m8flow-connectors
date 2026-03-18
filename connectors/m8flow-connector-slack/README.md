@@ -1,4 +1,4 @@
-# connector-slack
+# M8flow Connector Slack
 
 Slack connector for **m8flow**: post messages, send DMs, and upload files with OAuth token auth. Supports channel messaging, direct messaging, and file uploads with clear error reporting.
 
@@ -35,7 +35,7 @@ The m8flow connector proxy introspects each command's `__init__` parameters, so 
 1. In the m8flow-connector-proxy project, add this package as a dependency in `pyproject.toml`:
 
    ```toml
-   connector-slack = { git = "https://github.com/AOT-Technologies/m8flow-connectors.git", subdirectory = "connectors/connector-slack", branch = "main" }
+   m8flow-connector-slack = { git = "https://github.com/AOT-Technologies/m8flow-connectors.git", subdirectory = "connectors/m8flow-connector-slack", branch = "main" }
    ```
 
 2. Register the Slack connector and its commands in the proxy's connector configuration. The proxy discovers commands from `connector_slack.commands`: `PostMessage`, `SendDirectMessage`, `UploadFile`.
