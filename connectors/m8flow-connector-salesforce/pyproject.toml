@@ -2,6 +2,7 @@
 name = "m8flow-connector-salesforce"
 version = "1.0.0"
 description = "Salesforce connector for m8flow: CRUD for Lead and Contact with OAuth"
+license = "Apache-2.0"
 authors = []
 readme = "README.md"
 packages = [{include = "connector_salesforce", from = "src" }]

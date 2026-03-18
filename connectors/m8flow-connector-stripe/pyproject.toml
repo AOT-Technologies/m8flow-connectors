@@ -2,6 +2,7 @@
 name = "m8flow-connector-stripe"
 version = "1.0.0"
 description = "Stripe connector for m8flow: Payment intents, charges, subscriptions, and refunds with idempotency"
+license = "Apache-2.0"
 authors = []
 readme = "README.md"
 packages = [{include = "connector_stripe", from = "src" }]

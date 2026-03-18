@@ -2,6 +2,7 @@
 name = "m8flow-connector-smtp"
 version = "1.0.0"
 description = "Make SMTP Requests available to M8Flow Service Tasks"
+license = "Apache-2.0"
 authors = []
 readme = "README.md"
 packages = [{include = "connector_smtp", from = "src" }]
