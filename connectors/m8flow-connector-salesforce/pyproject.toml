@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "connector_salesforce"
+name = "m8flow-connector-salesforce"
 version = "1.0.0"
 description = "Salesforce connector for m8flow: CRUD for Lead and Contact with OAuth"
 authors = []
