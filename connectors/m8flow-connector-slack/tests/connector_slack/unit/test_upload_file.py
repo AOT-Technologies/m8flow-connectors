@@ -24,11 +24,18 @@ def _mock_success(m_url, m_up, m_done):
     m_done.return_value = ({"ok": True, "files": [{"id": "F1", "title": "t.txt"}]}, 200, None)
 
 
+def _b64(text: str) -> str:
+    return base64.b64encode(text.encode("utf-8")).decode("ascii")
+
+
 class TestUploadFile:
     def test_success(self) -> None:
         with patch(GET_URL) as m_url, patch(UPLOAD_BYTES) as m_up, patch(COMPLETE) as m_done:
             _mock_success(m_url, m_up, m_done)
-            r = UploadFile("tok", "C1", "hello", "t.txt", "comment").execute({}, {})
+            r = UploadFile("tok", "C1", filename="t.txt", initial_comment="comment", content_base64=_b64("hello")).execute(
+                {},
+                {},
+            )
             assert r["command_response"]["http_status"] == 200
             assert r["error"] is None
             m_url.assert_called_once_with("tok", "t.txt", 5)
@@ -37,14 +44,14 @@ class TestUploadFile:
 
     def test_empty_content_returns_error(self) -> None:
         with patch(GET_URL) as m_url:
-            r = UploadFile("tok", "C1", "", "t.txt").execute({}, {})
+            r = UploadFile("tok", "C1", filename="t.txt").execute({}, {})
             assert r["error"]["error_code"] == "SlackMissingContent"
             m_url.assert_not_called()
 
     def test_get_url_error_returns_early(self) -> None:
         with patch(GET_URL) as m_url, patch(UPLOAD_BYTES) as m_up, patch(COMPLETE) as m_done:
             m_url.return_value = ({}, 403, {"error_code": "SlackPermissionError", "message": "missing_scope"})
-            r = UploadFile("tok", "C1", "data", "x.txt").execute({}, {})
+            r = UploadFile("tok", "C1", filename="x.txt", content_base64=_b64("data")).execute({}, {})
             assert r["error"]["error_code"] == "SlackPermissionError"
             m_up.assert_not_called()
             m_done.assert_not_called()
@@ -55,7 +62,7 @@ class TestUploadFile:
                 {"ok": True, "upload_url": "https://x", "file_id": "F1"}, 200, None,
             )
             m_up.return_value = (500, {"error_code": "SlackUploadFailed", "message": "HTTP 500"})
-            r = UploadFile("tok", "C1", "data", "x.txt").execute({}, {})
+            r = UploadFile("tok", "C1", filename="x.txt", content_base64=_b64("data")).execute({}, {})
             assert r["error"]["error_code"] == "SlackUploadFailed"
             m_done.assert_not_called()
 
@@ -66,30 +73,30 @@ class TestUploadFile:
             )
             m_up.return_value = (200, None)
             m_done.return_value = ({}, 400, {"error_code": "SlackMessageFailed", "message": "channel_not_found"})
-            r = UploadFile("tok", "C1", "data", "x.txt").execute({}, {})
+            r = UploadFile("tok", "C1", filename="x.txt", content_base64=_b64("data")).execute({}, {})
             assert r["error"]["error_code"] == "SlackMessageFailed"
 
     def test_default_filename(self) -> None:
         with patch(GET_URL) as m_url, patch(UPLOAD_BYTES) as m_up, patch(COMPLETE) as m_done:
             _mock_success(m_url, m_up, m_done)
-            UploadFile("tok", "C1", "data").execute({}, {})
-            assert m_url.call_args[0][1] == "upload.txt"
+            UploadFile("tok", "C1", content_base64=_b64("data")).execute({}, {})
+            assert m_url.call_args[0][1] == "upload.bin"
 
 
 class TestUploadFileSizeLimit:
     """Tests for per-file size limit enforcement."""
 
     def test_content_exceeds_limit(self) -> None:
-        big_content = "x" * (51 * 1024 * 1024)
-        r = UploadFile("tok", "C1", big_content, "big.txt").execute({}, {})
-        assert r["error"] is not None
-        assert r["error"]["error_code"] == "ValueError"
-        assert "too large" in r["error"]["message"]
+        with patch(f"{MODULE}._get_upload_limit_bytes", return_value=3):
+            r = UploadFile("tok", "C1", filename="big.txt", content_base64=_b64("four")).execute({}, {})
+            assert r["error"] is not None
+            assert r["error"]["error_code"] == "ValueError"
+            assert "too large" in r["error"]["message"]
 
     def test_content_within_limit(self) -> None:
         with patch(GET_URL) as m_url, patch(UPLOAD_BYTES) as m_up, patch(COMPLETE) as m_done:
             _mock_success(m_url, m_up, m_done)
-            r = UploadFile("tok", "C1", "small", "ok.txt").execute({}, {})
+            r = UploadFile("tok", "C1", filename="ok.txt", content_base64=_b64("small")).execute({}, {})
             assert r["error"] is None
 
     def test_env_var_overrides_default_limit(self) -> None:
@@ -260,18 +267,18 @@ class TestUploadFileSpiffLogs:
     def test_success_includes_logs(self) -> None:
         with patch(GET_URL) as m_url, patch(UPLOAD_BYTES) as m_up, patch(COMPLETE) as m_done:
             _mock_success(m_url, m_up, m_done)
-            r = UploadFile("tok", "C1", "hello", "t.txt").execute({}, {})
+            r = UploadFile("tok", "C1", filename="t.txt", content_base64=_b64("hello")).execute({}, {})
             assert "spiff__logs" in r
             assert any("upload completed successfully" in l for l in r["spiff__logs"])
 
     def test_empty_content_includes_logs(self) -> None:
-        r = UploadFile("tok", "C1", "", "t.txt").execute({}, {})
+        r = UploadFile("tok", "C1", filename="t.txt").execute({}, {})
         assert "spiff__logs" in r
 
     def test_error_response_includes_logs(self) -> None:
         with patch(GET_URL) as m_url, patch(UPLOAD_BYTES) as m_up, patch(COMPLETE) as m_done:
             m_url.return_value = ({}, 403, {"error_code": "SlackPermissionError", "message": "missing_scope"})
-            r = UploadFile("tok", "C1", "data", "x.txt").execute({}, {})
+            r = UploadFile("tok", "C1", filename="x.txt", content_base64=_b64("data")).execute({}, {})
             assert "spiff__logs" in r
 
 
@@ -339,19 +346,25 @@ class TestUploadFileBase64:
             assert "spiff__logs" in r
             assert any("base64 mode" in log for log in r["spiff__logs"])
 
-    def test_base64_priority_over_content(self) -> None:
-        """base64 content takes priority over plain text content."""
-        b64_content = base64.b64encode(b"binary").decode("ascii")
+    def test_filepath_takes_priority_over_base64(self, tmp_path) -> None:
+        """filepath is used first when both filepath and content_base64 are provided."""
+        upload_file = tmp_path / "from-file.txt"
+        upload_file.write_bytes(b"from file")
+        b64_content = base64.b64encode(b"from base64").decode("ascii")
 
-        with patch(GET_URL) as m_url, patch(UPLOAD_BYTES) as m_up, patch(COMPLETE) as m_done:
+        with (
+            patch(f"{MODULE}.ATTACHMENTS_DIR", str(tmp_path)),
+            patch(GET_URL) as m_url,
+            patch(UPLOAD_BYTES) as m_up,
+            patch(COMPLETE) as m_done,
+        ):
             _mock_success(m_url, m_up, m_done)
-            r = UploadFile(
-                "tok", "C1", content="plain text", content_base64=b64_content,
-            ).execute({}, {})
+            r = UploadFile("tok", "C1", filepath=str(upload_file), content_base64=b64_content).execute({}, {})
 
             assert r["error"] is None
+            m_url.assert_called_once_with("tok", "from-file.txt", len(b"from file"))
             m_up.assert_called_once_with(
-                "https://files.slack.com/upload/v1/abc", "upload.bin", b"binary",
+                "https://files.slack.com/upload/v1/abc", "from-file.txt", b"from file",
             )
 
 

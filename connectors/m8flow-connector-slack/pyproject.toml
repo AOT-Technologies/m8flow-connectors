@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "connector_slack", from = "src" }]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12.1"
 requests = "^2.28.1"
 spiffworkflow-connector-command = {git = "https://github.com/sartography/spiffworkflow-connector-command.git", rev = "main"}
 
@@ -44,8 +44,8 @@ ignore = [
 
 line-length = 130
 
-# target python 3.10
-target-version = "py310"
+# target python 3.12.1
+target-version = "py312"
 
 exclude = [
   "migrations"
