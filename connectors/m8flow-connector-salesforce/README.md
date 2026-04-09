@@ -11,17 +11,17 @@ Salesforce connector for **m8flow**: CRUD for Lead and Contact with OAuth 2.0. S
 
 ## Commands
 
-- **CreateLead** – Create a Lead. Required fields: `LastName`, `Company`. `fields` is a JSON string.
-- **CreateContact** – Create a Contact. Required: `LastName`. `fields` is a JSON string.
-- **ReadLead** / **ReadContact** – Read by `record_id` (e.g. `00Q...`, `003...`).
-- **UpdateLead** / **UpdateContact** – Update by `record_id`; `fields` is a JSON string of fields to update.
-- **DeleteLead** / **DeleteContact** – Delete by `record_id`.
+- **CreateLead** - Create a Lead. Required fields: `LastName`, `Company`. `fields` is a JSON string.
+- **CreateContact** - Create a Contact. Required: `LastName`. `fields` is a JSON string.
+- **ReadLead** / **ReadContact** - Read by `record_id` (e.g. `00Q...`, `003...`).
+- **UpdateLead** / **UpdateContact** - Update by `record_id`; `fields` is a JSON string of fields to update.
+- **DeleteLead** / **DeleteContact** - Delete by `record_id`.
 
-The m8flow connector proxy introspects each command’s `__init__` parameters, so these become the configuration options in the workflow UI.
+The m8flow connector proxy introspects each command's `__init__` parameters, so these become the configuration options in the workflow UI.
 
 ## Authentication
 
-- **Required**: `access_token`, `instance_url` (e.g. `https://na50.salesforce.com`). Obtain and store via m8flow (or your platform’s secure config). Tokens are never logged or included in error messages.
+- **Required**: `access_token`, `instance_url` (e.g. `https://na50.salesforce.com`). Obtain and store via m8flow (or your platform's secure config). Tokens are never logged or included in error messages.
 - **Optional (token refresh)**: `refresh_token`, `client_id`, `client_secret`. When provided and a request returns 401, the connector will attempt to refresh the access token and retry once.
 
 ## Field mapping
@@ -33,7 +33,7 @@ The m8flow connector proxy introspects each command’s `__init__` parameters, s
 
 - **SalesforceAuthError**: Invalid or expired token (401).
 - **SalesforcePermissionError**: Insufficient privileges (403).
-- **SalesforceValidationError**: Invalid/missing fields or schema (400, 422), including local validation failures.
+- **SalesforceValidationError**: Invalid or missing fields or schema (400, 422), including local validation failures.
 - **SalesforceApiError**: Other API errors (e.g. 404 record not found, 500). Message includes detail for workflow logs.
 
 ## Adding this connector to m8flow-connector-proxy
@@ -44,8 +44,7 @@ The m8flow connector proxy introspects each command’s `__init__` parameters, s
    m8flow-connector-salesforce = { git = "https://github.com/AOT-Technologies/m8flow-connectors.git", subdirectory = "connectors/m8flow-connector-salesforce", branch = "main" }
    ```
 
-2. Register the Salesforce connector and its commands in the proxy’s connector configuration. The proxy discovers commands from `connector_salesforce.commands`: `CreateLead`, `CreateContact`, `ReadLead`, `ReadContact`, `UpdateLead`, `UpdateContact`, `DeleteLead`, `DeleteContact`.
-
+2. Register the Salesforce connector and its commands in the proxy's connector configuration. The proxy discovers commands from `connector_salesforce.commands`: `CreateLead`, `CreateContact`, `ReadLead`, `ReadContact`, `UpdateLead`, `UpdateContact`, `DeleteLead`, `DeleteContact`.
 3. Configure the Salesforce OAuth credentials in m8flow and map them to the command parameters in your workflows.
 
 ## Testing
