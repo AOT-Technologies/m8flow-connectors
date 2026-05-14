@@ -93,7 +93,7 @@ def _parse_github_json_response(response: requests.Response) -> tuple[Any, int, 
 def error_response(http_status: int, error_code: str, message: str) -> ConnectorProxyResponseDict:
     """Build connector response for an error (e.g. missing required field)."""
     return {
-        "command_response": {"body": "{}", "mimetype": "application/json", "http_status": http_status},
+        "command_response": {"body": "{}", "mimetype": "application/json", "http_status": http_status, "parsed_body": {}},
         "error": {"error_code": error_code, "message": message},
         "command_response_version": 2,
     }
@@ -107,5 +107,6 @@ def build_result(
         "body": json.dumps(response_json),
         "mimetype": "application/json",
         "http_status": status,
+        "parsed_body": response_json,
     }
     return {"command_response": return_response, "error": error, "command_response_version": 2}

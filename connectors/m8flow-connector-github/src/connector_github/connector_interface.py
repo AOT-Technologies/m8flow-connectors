@@ -5,12 +5,13 @@ from typing import Any, TypedDict
 from spiffworkflow_connector_command.command_interface import ConnectorCommand as SpiffConnectorCommand
 
 
-class CommandResponseDict(TypedDict):
+class CommandResponseDict(TypedDict, total=False):
     """Response envelope for command body."""
 
     body: str
     mimetype: str
     http_status: int
+    parsed_body: Any
 
 
 class CommandErrorDict(TypedDict):
